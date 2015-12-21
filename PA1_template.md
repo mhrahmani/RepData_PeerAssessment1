@@ -10,43 +10,62 @@ so. let's read the data in first.
 we're assuming that the data is available in your working directory.
 it has to be unzipped and read into R studio.
 
-```{r}
+
+```r
  # raw_data <- read.csv(unz("./data/activity.zip", "activity.csv"))
 ```
 
-```{r}
+
+```r
 raw_data <- read.csv("activity.csv")
 ```
 
 oh and lets load these libraries:
-```{r}
+
+```r
 library(lattice)
 ```
 
 ## What is the mean total number of steps taken per day?
 so first of all, we calculate the sum of all steps taken per day:
-```{r}
+
+```r
 sum_steps_day <- aggregate(raw_data$steps, by=list(date=raw_data$date), FUN=sum)
 head(sum_steps_day)
 ```
 
+```
+##         date     x
+## 1 2012-10-01    NA
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
+```
+
 then, we draw the histogram here.i use a simple histogram
-```{r}
+
+```r
 hist(sum_steps_day$x, breaks=20, main="Total number of steps per day", xlab="total daily steps")
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 looks good. now we calculate the mean and the median of the total number of steps taken
-```{r}
+
+```r
 steps_mean <- mean(sum_steps_day$x, na.rm = TRUE)
 steps_median <- median(sum_steps_day$x, na.rm = TRUE)
 ```
-1. The **Mean** of the total number of steps is `r steps_mean`
-2. The **Median** of the total number of steps is `r steps_median`
+1. The **Mean** of the total number of steps is 1.0766189 &times; 10<sup>4</sup>
+2. The **Median** of the total number of steps is 10765
 
 ## What is the average daily activity pattern
 so it gets more complicated here. we have to filter our time intervals to figure out how many levels 
 of change are there. so here we go:
-```{r}
+
+```r
 interval_factor <- factor(raw_data$interval)
 steps <- nlevels(interval_factor)
 interval_factor <- factor(raw_data$interval)[1:steps]
@@ -65,10 +84,17 @@ col = "blue"
 )
 ```
 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+
 using the data we have, we sort the time intervals by the average steps to find the max # of steps.
-```{r}
+
+```r
 steps_interval <- data.frame(interval_factor, avg_steps)
 steps_interval <- steps_interval[order(steps_interval$avg_steps, decreasing = TRUE),]
 steps_interval$interval_factor[1]
+```
 
+```
+## [1] 835
+## 288 Levels: 0 5 10 15 20 25 30 35 40 45 50 55 100 105 110 115 120 ... 2355
 ```
