@@ -98,3 +98,39 @@ steps_interval$interval_factor[1]
 ## [1] 835
 ## 288 Levels: 0 5 10 15 20 25 30 35 40 45 50 55 100 105 110 115 120 ... 2355
 ```
+
+## Imputing missing values(new word. impute!)
+the number of missing values are as follows:
+
+```r
+length(raw_data$steps[is.na(raw_data$steps)])
+```
+
+```
+## [1] 2304
+```
+so for the second part, we make a loop and replace each NA with the average, as suggested in the readme.
+
+```r
+steps <- raw_data$steps
+
+for (i in which(sapply(steps, is.na))) {
+  if (i <= 288){
+    steps[i] <- avg_steps[i]
+  }
+  
+  else{
+    j <- i%%288 + 1
+    steps[i] <- avg_steps[j]
+  }
+}
+
+days <- factor(steps)
+
+total_steps <- tapply(steps, days, FUN = sum)
+
+histogram(steps,
+          main = "total steps after imputing the NAs")
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
