@@ -20,7 +20,7 @@ it has to be unzipped and read into R studio.
 raw_data <- read.csv("activity.csv")
 ```
 
-oh and lets load these libraries:
+oh and lets load this library:
 
 ```r
 library(lattice)
@@ -124,7 +124,12 @@ for (i in which(sapply(steps, is.na))) {
     steps[i] <- avg_steps[j]
   }
 }
+```
 
+so now we can draw a new histogram based on the new data
+
+
+```r
 days <- factor(steps)
 
 total_steps <- tapply(steps, days, FUN = sum)
@@ -133,4 +138,53 @@ histogram(steps,
           main = "total steps after imputing the NAs")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+
+in the end, we calculate **Mean** and **Median** the same way we did in the beginning:
+
+```r
+new_steps_mean <- mean(steps)
+new_steps_median <- median(steps)
+```
+1. The **Mean** of the total number of steps is 37.3825729
+2. The **Median** of the total number of steps is 0
+
+```r
+#not sure why the median is Zero this time. all else looks okay
+```
+
+
+## difference in activity pattern between weekends and weekdays
+assuming we're going by the american basis (saturday and sundays are weeekends)
+
+
+```r
+#we wanna take advantage of the date converters R, so we convert our date section to R's DATE
+#for that, we need the XTable library. so let's load it first:
+library(xtable)
+
+#now let's continue:
+date <- as.Date(raw_data$date)
+
+weekdays <- weekdays(date)
+weekends <- c("Saturday", "Sunday")
+
+#now we make a data frame for all the data we're using so it can be made into a plot
+
+plotter <- data.frame(date, interval_factor, steps, weekdays)
+plot_weekend <- plotter$weekdays %in% weekends
+
+#now we add it to our plotter DF
+
+plotter$day = factor(plot_weekend, labels = c("WeekDay", "WeekEnd"))
+
+#and now for the actual plot:
+xyplot(plotter$steps ~ raw_data$interval | plotter$day,
+       layout = c(2,1), 
+       type = "l",
+       main = "Steps took in WeekEnds vs Weekdays",
+       col = "black"
+       )
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
